@@ -48,4 +48,10 @@ export const appErrors = {
       code: 500,
       message: `環境変数の設定が正しくありません。${String(error)}`,
     }),
+  transactWriteError: (error?: unknown) =>
+    new AppError({
+      statusCode: 500,
+      code: 500,
+      message: `トランザクションの書き込み中にエラーが発生しました。${String(error)}`,
+    }),
 } as const;

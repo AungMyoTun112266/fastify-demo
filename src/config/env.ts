@@ -3,6 +3,7 @@ import { z } from "zod";
 import { appErrors } from "../shared/errors/errors.js";
 
 const envSchema = z.object({
+  AWS_REGION: z.string().default("ap-northeast-1"),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
