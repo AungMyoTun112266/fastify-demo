@@ -2,12 +2,13 @@ import fp from "fastify-plugin";
 import {
   serializerCompiler,
   validatorCompiler,
-  type FastifyPluginAsyncZod,
+  type FastifyPluginCallbackZod,
 } from "fastify-type-provider-zod";
 
-const zodPlugin: FastifyPluginAsyncZod = async (app) => {
+const zodPlugin: FastifyPluginCallbackZod = (app, _options, done) => {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
+  done();
 };
 
 export default fp(zodPlugin, {

@@ -1,34 +1,33 @@
-import type { DynamoDBItem } from "./types.js";
+export class ExpressionAttributes {
+  readonly #names = new Map<string, string>();
+  readonly #values: Record<string, unknown> = {};
+  #valueCount = 0;
 
-export interface CompiledExpression {
-  expression: string;
-  expressionAttributeNames: Record<string, string>;
-  expressionAttributeValues: DynamoDBItem;
-}
+  name(attribute: string): string {
+    let alias = this.#names.get(attribute);
+    if (alias === undefined) {
+      alias = `#n${this.#names.size}`;
+      this.#names.set(attribute, alias);
+    }
+    return alias;
+  }
 
-export interface AliasRegistry {
-  readonly names: Record<string, string>;
-  readonly values: DynamoDBItem;
-  nameAlias(attribute: string): string;
-  valueAlias(attribute: string, suffix: string, value: unknown): string;
-}
+  value(value: unknown): string {
+    const alias = `:v${this.#valueCount++}`;
+    this.#values[alias] = value;
+    return alias;
+  }
 
-export function createAliasRegistry(): AliasRegistry {
-  const names: Record<string, string> = {};
-  const values: DynamoDBItem = {};
-
-  return {
-    names,
-    values,
-    nameAlias(attribute) {
-      const alias = `#${attribute}`;
-      names[alias] = attribute;
-      return alias;
-    },
-    valueAlias(attribute, suffix, value) {
-      const alias = `:${attribute}_${suffix}`;
-      values[alias] = value;
-      return alias;
-    },
-  };
+  toInput(): {
+    ExpressionAttributeNames?: Record<string, string>;
+    ExpressionAttributeValues?: Record<string, unknown>;
+  } {
+    const names = Object.fromEntries(
+      [...this.#names].map(([attribute, alias]) => [alias, attribute]),
+    );
+    return {
+      ...(this.#names.size > 0 ? { ExpressionAttributeNames: names } : {}),
+      ...(this.#valueCount > 0 ? { ExpressionAttributeValues: this.#values } : {}),
+    };
+  }
 }

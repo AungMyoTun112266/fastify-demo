@@ -1,9 +1,9 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 
 import { logger } from "../shared/logger/index.js";
 
-const requestLoggerPlugin: FastifyPluginAsync = async (app) => {
+const requestLoggerPlugin: FastifyPluginCallback = (app, _options, done) => {
   //   app.addHook("onRequest", async (request) => {
   //     logger.info(
   //       {
@@ -15,7 +15,7 @@ const requestLoggerPlugin: FastifyPluginAsync = async (app) => {
   //       "Incoming request",
   //     );
   //   });
-  app.addHook("preHandler", async (request) => {
+  app.addHook("preHandler", (request, _reply, next) => {
     logger.info(
       {
         method: request.method,
@@ -27,6 +27,7 @@ const requestLoggerPlugin: FastifyPluginAsync = async (app) => {
       },
       "Incoming request",
     );
+    next();
   });
   app.addHook("onSend", async (request, reply, payload) => {
     logger.info(
@@ -41,6 +42,7 @@ const requestLoggerPlugin: FastifyPluginAsync = async (app) => {
 
     return payload;
   });
+  done();
 };
 
 export default fp(requestLoggerPlugin, {

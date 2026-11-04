@@ -1,9 +1,9 @@
 import fp from "fastify-plugin";
-import type { FastifyPluginAsync, FastifyError } from "fastify";
+import type { FastifyPluginCallback, FastifyError } from "fastify";
 
 import { AppError, appErrors } from "../shared/errors/index.js";
 
-const errorPlugin: FastifyPluginAsync = async (app) => {
+const errorPlugin: FastifyPluginCallback = (app, _options, done) => {
   app.setErrorHandler((error: FastifyError, request, reply) => {
     if (error instanceof AppError) {
       request.log.warn(error);
@@ -39,6 +39,7 @@ const errorPlugin: FastifyPluginAsync = async (app) => {
       // },
     });
   });
+  done();
 };
 
 export default fp(errorPlugin, {

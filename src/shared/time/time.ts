@@ -8,7 +8,7 @@ const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const toTokyoDate = (value: string | Date): TZDate => {
   if (value instanceof Date) {
     if (!isValid(value)) {
-      throw new Error(`Invalid date: ${value}`);
+      throw new Error(`Invalid date: ${value.toString()}`);
     }
 
     return new TZDate(value.getTime(), TIME_ZONE);

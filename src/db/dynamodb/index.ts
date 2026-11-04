@@ -1,44 +1,7 @@
-export type {
-  DynamoDBItem,
-  DynamoDBKey,
-  TransactWriteItem,
-  QueryItemsParams,
-  QueryItemsResult,
-  QueryPageResult,
-  ScanItemsParams,
-  SetExpression,
-} from "./types.js";
-export type { CompiledExpression } from "./expression.js";
-export type {
-  CompiledUpdate,
-  UpdateOperations,
-  UpdateCondition,
-  NumericPartial,
-} from "./update.js";
-export type { KeyCondition, HashKeyPredicate, RangeKeyPredicate } from "./key-condition.js";
-export type { Filter } from "./filter.js";
-export {
-  applyPut,
-  applyUpdate,
-  buildTransactCreate,
-  buildTransactDelete,
-  buildTransactUpdate,
-  queryAll,
-  queryBy,
-  scanBy,
-} from "./table-operations.js";
-export {
-  buildSetExpression,
-  deleteItem,
-  getItem,
-  putItem,
-  queryAllItems,
-  queryItems,
-  scanItems,
-  updateItem,
-} from "./commands.js";
-export { isConditionalCheckFailure, transactWrite } from "./transact.js";
-export { decodeCursor, encodeCursor } from "./cursor.js";
-export { compileUpdate } from "./update.js";
-export { compileKeyCondition } from "./key-condition.js";
-export { compileFilter, definedFilters, whenDefined } from "./filter.js";
+export { dynamodb } from "./client.js";
+export { defineTable } from "./table.js";
+export type { Page, QueryOptions, TableConfig, WriteOptions } from "./table.js";
+export type { Condition, SortKeyCondition } from "./condition.js";
+export type { Update } from "./update.js";
+export { isConditionalCheckFailure, transactWrite } from "./transaction.js";
+export type { TransactionItem } from "./transaction.js";

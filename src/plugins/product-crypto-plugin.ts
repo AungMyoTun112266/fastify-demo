@@ -1,33 +1,34 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginCallback } from "fastify";
 import fp from "fastify-plugin";
 import {
   encryptProductResponse,
   decryptProductRequest,
 } from "../features/product/product.crypto.js";
 
-const productCryptoPlugin: FastifyPluginAsync = async (app) => {
-  app.addHook("preValidation", async (request) => {
-    if (request.body === undefined) return;
-    request.body = await decryptProductRequest(request.body);
+const productCryptoPlugin: FastifyPluginCallback = (app, _options, done) => {
+  app.addHook("preValidation", (request, _reply, next) => {
+    if (request.body !== undefined) {
+      request.body = decryptProductRequest(request.body);
+    }
+    next();
   });
 
-  app.addHook("onSend", async (request, reply, payload) => {
+  app.addHook("onSend", (request, reply, payload, next) => {
     if (
       reply.statusCode === 204 ||
       request.method === "HEAD" ||
-      !payload ||
-      typeof payload !== "string"
+      typeof payload !== "string" ||
+      payload === ""
     ) {
-      return payload;
+      next(null, payload);
+      return;
     }
 
-    const encrypted = await encryptProductResponse(payload);
+    const encrypted = encryptProductResponse(payload);
     reply.header("content-type", "application/json; charset=utf-8");
-    return JSON.stringify({
-      success: true,
-      data: encrypted,
-    });
+    next(null, JSON.stringify({ success: true, data: encrypted }));
   });
+  done();
 };
 
 export default fp(productCryptoPlugin, {

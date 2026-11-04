@@ -8,9 +8,7 @@ const IV_LENGTH = 12;
 
 const key = Buffer.from(env.PRODUCT_ENCRYPTION_KEY, "hex");
 
-export const encryptProductResponse = async (
-  payload: string,
-): Promise<string> => {
+export const encryptProductResponse = (payload: string): string => {
   const iv = randomBytes(IV_LENGTH);
 
   const cipher = createCipheriv(ALGORITHM, key, iv);
@@ -29,9 +27,7 @@ export const encryptProductResponse = async (
   ].join(":");
 };
 
-export const decryptProductRequest = async (
-  payload: unknown,
-): Promise<unknown> => {
+export const decryptProductRequest = (payload: unknown): unknown => {
   if (
     typeof payload !== "object" ||
     payload === null ||
@@ -50,8 +46,8 @@ export const decryptProductRequest = async (
   const [ivHex, authTagHex, encryptedHex] = parts;
 
   if (
-    !ivHex ||
-    !authTagHex ||
+    ivHex === undefined ||
+    authTagHex === undefined ||
     encryptedHex === undefined ||
     !/^[0-9a-fA-F]{24}$/.test(ivHex) ||
     !/^[0-9a-fA-F]{32}$/.test(authTagHex) ||
@@ -75,7 +71,8 @@ export const decryptProductRequest = async (
       decipher.final(),
     ]);
 
-    return JSON.parse(decrypted.toString("utf8")) as unknown;
+    const parsed: unknown = JSON.parse(decrypted.toString("utf8"));
+    return parsed;
   } catch {
     throw appErrors.validationFailed();
   }

@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+import type { FastifyPluginCallbackZod } from "fastify-type-provider-zod";
 
 import { userService } from "./user.service.js";
 import {
@@ -12,7 +12,7 @@ import {
   apiSuccessSchema,
 } from "../../shared/schemas/api-response.schema.js";
 
-const userRoutes: FastifyPluginAsyncZod = async (app) => {
+const userRoutes: FastifyPluginCallbackZod = (app, _options, done) => {
   app.get(
     "/",
     {
@@ -74,6 +74,7 @@ const userRoutes: FastifyPluginAsyncZod = async (app) => {
       return reply.code(204).send();
     },
   );
+  done();
 };
 
 export default userRoutes;
